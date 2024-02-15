@@ -6,16 +6,18 @@ const productModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-    brand: {
-      type: Number,
-      required: true,
-    },
     categoryID: {
-      type: String,
-      required: false,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CategorySchema",
+      required: true,
+      autopopulate: true,
     },
-   
+    subCategoryID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubCategorySchema",
+      required: false,
+      autopopulate: true,
+    },
     description: {
       type: String,
       required: true,
@@ -24,14 +26,21 @@ const productModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    averageRating: {
+    skinType: {
       type: String,
+      enum: ["oil", "mix", "dry"],
       required: true,
     },
+    ingrediants:[{ingrediantsID:{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ingrediantSchema",
+      required: false,
+      autopopulate: true,
+    }}]
   },
   { timestamps: true }
 );
-
+productModelSchema.plugin(mongooseAutoPopulate);
 const ProductSchema = mongoose.model('ProductSchema', productModelSchema);
 
 export default ProductSchema;
