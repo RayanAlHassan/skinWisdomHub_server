@@ -9,10 +9,10 @@ import {
   deleteAll,
 
 } from "../controllers/productController.js";
-import { upload } from "../middlewares/multer.js";
+import {upload} from "../middlewares/multer.js"
 import { authenticateUser, authorizeUser } from "../middlewares/auth.js";
 
- const productRoutes = express.Router();
+const productRoutes = express.Router();
 
 productRoutes.get("/getone/:id", getOne);
 productRoutes.get("/getall", getAll);

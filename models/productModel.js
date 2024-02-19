@@ -28,15 +28,15 @@ const productModelSchema = new mongoose.Schema(
     },
     skinType: {
       type: String,
-      enum: ["oil", "mix", "dry"],
+      enum: ["Dry", "Oily", "Mix","All Skin"],
       required: true,
     },
-    ingrediants:[{ingrediantsID:{
+    ingrediantsID:[{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ingrediantSchema",
-      required: false,
+      ref: "Ingrediant",
+      required: true,
       autopopulate: true,
-    }}]
+    }]
   },
   { timestamps: true }
 );
@@ -44,4 +44,3 @@ productModelSchema.plugin(mongooseAutoPopulate);
 const ProductSchema = mongoose.model('ProductSchema', productModelSchema);
 
 export default ProductSchema;
-

@@ -77,12 +77,11 @@ export const deleteSubCateg = async (req, res) => {
 //create SubCateg
 
 export const createSubCateg = async (req, res) => {
-  const { name, categoryID, arabicName } = req.body;
+  const { name, categoryID } = req.body;
   try {
     const newSubCateg = new SubCategorySchema({
       name,
       categoryID,
-      arabicName,
     });
     await newSubCateg.save();
     res.status(200).json({

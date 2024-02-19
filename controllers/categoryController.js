@@ -1,25 +1,41 @@
 import CategorySchema from "../models/categoryModel.js";
+import fs from 'fs'
 
 //create category
 
-export const createCategory = async (req, res) => {
-  const { name, arabicName } = req.body;
-  const image = req.file.filename;
+export const createCategory = async (req,res)=>{
+  const {name} = req.body;
+
   try {
-    const newCategory = new CategorySchema({
-      name,
-      arabicName,
-      image,
-    });
-    await newCategory.save();
-    res
-      .status(200)
-      .json({ message: "Category created successfully", result: newCategory });
-  } catch (err) {
-    console.log(err);
-    res.status(500).send("error creating category");
+    if(!name ){
+      const path = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(path)
+      return res.status(400).json("All fields are required")
+    }
+
+    // console.log(req.file.filename)
+
+    if(!req.file){
+      return res.status(400).json("upload an image")
+    }
+
+    const image = req.file.filename;
+
+    const newCategory = await CategorySchema.create({
+            name,
+            image,
+        
+          });
+
+          return res.status(200).json(newCategory)
+
+  } catch (error) {
+    console.log(error);
+    const path = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(path)
+  res.status(500).json({ message: "Problem adding Category", error: error });
   }
-};
+}
 
 //get category
 

@@ -6,15 +6,18 @@ import {
   updateCategory,
   deleteCategory,
 } from "../controllers/categoryController.js";
-import upload from "../middlewares/multer.js";
+// import upload from "../middlewares/multer.js";
+import { upload } from "../middlewares/multer.js";
 
-export const categoryRouter = express.Router();
+ const categoryRoutes = express.Router();
 
-categoryRouter.post("/create", upload.single("image"), createCategory);
+categoryRoutes.post("/create", upload.single("image"), createCategory);
 
-categoryRouter.get("/getone/:id", getCategoryByID);
-categoryRouter.get("/getall", getAllCategories);
+categoryRoutes.get("/getone/:id", getCategoryByID);
+categoryRoutes.get("/getall", getAllCategories);
 
-categoryRouter.put("/update/:id", upload.single("image"), updateCategory);
+categoryRoutes.put("/update/:id", upload.single("image"), updateCategory);
 
-categoryRouter.delete("/delete/:id", deleteCategory);
+categoryRoutes.delete("/delete/:id", deleteCategory);
+
+export {categoryRoutes}

@@ -12,7 +12,7 @@ const ingrediantsModelSchema = new mongoose.Schema(
     },
     skinType: {
       type: String,
-      enum: ["Dry", "Oily", "Combination"],
+      enum: ["Dry", "Oily", "Mix","All Skin"],
       required: true,
     },
   },

@@ -1,4 +1,5 @@
 import ProductSchema from '../models/productModel.js';
+import fs from 'fs'
 
 export const getOne = async (req, res) => {
   const productId = req.params.id;
@@ -26,51 +27,70 @@ export const getAll = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const productId = req.params.id;
+  const id = req.params.id;
+  const {name, categoryID, subCategoryID, description,skinType,ingrediantsID } = req.body;
+  const image = req.file ? req.file.filename : find.image;
 
   try {
-    const updatedFields = req.body;
-    if(req.file) {
-      updatedFields.image = req.file.path;
-    }
-    
-    const updatedProduct = await ProductSchema.findByIdAndUpdate(
-      productId,
-      updatedFields,
-      { new: true }
-    );
-    
-    if (!updatedProduct) {
-      return res.status(404).json({ error: 'Product not found' });
+    const existingProduct = await ProductSchema.findById(id);
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
     }
 
-    res.status(200).json(updatedProduct);
+    if (name) existingProduct.name = name;
+    if (categoryID) existingProduct.categoryID = categoryID;
+    if (subCategoryID) existingProduct.subCategoryID = subCategoryID;
+    if (description) existingProduct.description = description;
+    if (skinType) existingProduct.skinType = skinType;
+    if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
+    if (image) existingProduct.image = image;
+
+    const updatedProduct = await existingProduct.save();
+
+    return res.status(200).json(updatedProduct);
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-export const createProduct = async (req, res) => {
+
+
+export const createProduct = async (req,res)=>{
+  const {name, categoryID, subCategoryID, description,skinType,ingrediantsID } = req.body;
+
   try {
-    const { name, brand, categoryID, subCategoryID, description, image, averageRating, ingredients } = req.body;
+    if(!name  || !categoryID || !subCategoryID || !description ){
+      const path = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(path)
+      return res.status(400).json("All fields are required")
+    }
 
-    const newProduct = new ProductSchema({
-      name,
-      categoryID,
-      subCategoryID,
-      description,
-      image,
-      ingredients,
-      skinType 
-    });
+    if(!req.file){
+      return res.status(400).json("upload an image")
+    }
 
-    await newProduct.save();
-    res.status(200).json({ message: "Product added successfully!", product: newProduct });
+    const image = req.file.filename;
+
+    const newProduct = await ProductSchema.create({
+            name,
+            categoryID,
+            subCategoryID,
+            description,
+            image,
+            ingrediantsID,
+            skinType 
+          });
+          const path = `Public/images/${req.file.filename}`;
+          fs.unlinkSync(path)
+          return res.status(200).json(newProduct)
+
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Problem adding product", error: err });
+  res.status(500).json({ message: "Problem adding product", error: err });
   }
-};
+}
+
 
 export const deleteAll = async (req, res) => {
   try {

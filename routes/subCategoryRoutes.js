@@ -8,14 +8,15 @@ import {
   getSubByCategory,
 } from "../controllers/subCategoryController.js";
 
-export const subCategoryRouter = express.Router();
+ const subCategoryRoutes = express.Router();
 
-subCategoryRouter.get("/getone/:id", getOne);
-subCategoryRouter.get("/getall", getAll);
-subCategoryRouter.get("/getsubbycategory/:categoryID", getSubByCategory);
+subCategoryRoutes.get("/getone/:id", getOne);
+subCategoryRoutes.get("/getall", getAll);
+subCategoryRoutes.get("/getsubbycategory/:categoryID", getSubByCategory);
 
-subCategoryRouter.patch("/:id", updateSubCateg);
+subCategoryRoutes.patch("/:id", updateSubCateg);
 
-subCategoryRouter.post("/create", createSubCateg);
+subCategoryRoutes.post("/create", createSubCateg);
 
-subCategoryRouter.delete("/delete/:id", deleteSubCateg);
+subCategoryRoutes.delete("/delete/:id", deleteSubCateg);
+export {subCategoryRoutes}

@@ -16,7 +16,7 @@ const reviewModelSchema = new mongoose.Schema(
     },
     skinType: {
       type: String,
-      enum: ["Dry", "Oily", "Combination"],
+      enum: ["Dry", "Oily", "Mix","All Skin"],
       required: true,
     },
     success: {
@@ -27,9 +27,9 @@ const reviewModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    user: {
+    userID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "UserSchema",
       required: true,
     },
   },

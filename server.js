@@ -3,15 +3,16 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { userRoutes } from "./routes/userRoutes.js"; // update import statement
-// import { productRouter } from "./routes/productRoutes.js";
-// import { subCategoryRouter } from "./routes/subCategoryRoutes.js";
-// import { categoryRouter } from "./routes/categoryRoutes.js";
+import { productRoutes } from "./routes/productRoutes.js";
+import { subCategoryRoutes } from "./routes/subCategoryRoutes.js";
+// import { categoryRoutes } from "./routes/categoryRouter.js";
+import { categoryRoutes } from "./routes/categoryRoutes.js";
 // import { orderRouter } from "./routes/orderRoutes.js";
 import cookieParser from "cookie-parser";
 dotenv.config();
 import reviewRoutes from "./routes/ReviewRoutes.js";
 import ingrediantRoutes from "./routes/IngrediantsRoutes.js";
-
+import testimoniolRoutes from "./routes/testimonilRoutes.js";
 // express app
 const app = express();
 app.use(express.json());
@@ -27,11 +28,12 @@ app.use(
 app.use(express.static("images"));
 
 app.use("/user", userRoutes);
-// app.use("/product", productRouter);
-// app.use("/subCategory", subCategoryRouter);
-// app.use("/category", categoryRouter);
+app.use("/product", productRoutes);
+app.use("/subCategory", subCategoryRoutes);
+app.use("/category", categoryRoutes);
 // app.use("/order", orderRouter);
 app.use("/reviews", reviewRoutes);
+app.use("/testimoniol", testimoniolRoutes)
 app.use("/ingrediants", ingrediantRoutes);
 
 async function startServer() {

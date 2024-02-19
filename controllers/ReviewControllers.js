@@ -43,7 +43,7 @@ export const getReview = async (req, res) => {
 
 // Add A review
 export const addReview = async (req, res) => {
-  const { productName, title, description, skinType, success, user } = req.body;
+  const { productName, title, description, skinType, success, userID } = req.body;
   const image = req.file?.path;
 
   try {
@@ -53,7 +53,7 @@ export const addReview = async (req, res) => {
       !description ||
       !skinType ||
       !success ||
-      !user
+      !userID
     ) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -65,7 +65,7 @@ export const addReview = async (req, res) => {
       skinType,
       success,
       image,
-      user,
+      userID,
     });
     return res.status(200).json(newReview);
   } catch (error) {
@@ -77,7 +77,7 @@ export const addReview = async (req, res) => {
 // Update a Review
 export const updateReview = async (req, res) => {
   const id = req.params.id;
-  const { productName, title, description, skinType, success, user } = req.body;
+  const { productName, title, description, skinType, success, userID } = req.body;
   const image = req.file?.path;
 
   try {
@@ -92,7 +92,7 @@ export const updateReview = async (req, res) => {
     if (skinType) existingReview.skinType = skinType;
     if (success) existingReview.success = success;
     if (image) existingReview.image = image;
-    if (user) existingReview.user = user;
+    if (userID) existingReview.userID = userID;
 
     const updatedReview = await existingReview.save();
 
