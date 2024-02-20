@@ -130,8 +130,9 @@ export const createProduct = async (req, res) => {
 
 export const deleteAll = async (req, res) => {
   try {
+   
     await ProductSchema.deleteMany({});
-    res.status(204).end();
+    res.status(204).json({message:`all product deleted`});
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -177,3 +178,19 @@ export const searchProduct = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+// get products by sub category
+
+export const getLastEight = async (req, res) => {
+  try {
+    const allProducts = await ProductSchema.find().sort({ _id: -1 }).limit(8);
+    if (!allProducts || allProducts.length == 0) {
+      return res.status(404).send("No products found!");
+    }
+    return res.status(200).json({ products: allProducts });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Cannot fetch products" });
+  }
+};
+
