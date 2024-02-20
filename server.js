@@ -25,7 +25,8 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-app.use(express.static("images"));
+app.use(express.static("Public"));
+app.use("/images", express.static("images"));
 
 app.use("/user", userRoutes);
 app.use("/product", productRoutes);
@@ -33,7 +34,7 @@ app.use("/subCategory", subCategoryRoutes);
 app.use("/category", categoryRoutes);
 // app.use("/order", orderRouter);
 app.use("/reviews", reviewRoutes);
-app.use("/testimoniol", testimoniolRoutes)
+app.use("/testimoniol", testimoniolRoutes);
 app.use("/ingrediants", ingrediantRoutes);
 
 async function startServer() {

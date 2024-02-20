@@ -1,3 +1,4 @@
+import UserSchema from "../models/UserModel.js";
 import ProductSchema from "../models/productModel.js";
 import fs from "fs";
 
@@ -36,11 +37,12 @@ export const updateProduct = async (req, res) => {
     skinType,
     ingrediantsID,
   } = req.body;
-  const image = req.file.filename;
 
   try {
     const existingProduct = await ProductSchema.findById(id);
     if (!existingProduct) {
+      const path = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(path);
       return res.status(404).json({ error: "Product not found" });
     }
 
@@ -50,56 +52,37 @@ export const updateProduct = async (req, res) => {
     if (description) existingProduct.description = description;
     if (skinType) existingProduct.skinType = skinType;
     if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
-    if (image) existingProduct.image = image;
-    const oldImagePth = `Public/images/${existingProduct.image}`;
-    console.log("Old Image Path:", oldImagePth);
+    // if (image) existingProduct.image = image;
+
+    console.log(existingProduct.image);
+
+    const oldImagePath = `Public/images/${existingProduct.image}`;
+
+    // console.log(oldImagePath)
 
     if (req.file) {
+      console.log(req.file.filename);
       existingProduct.image = req.file.filename;
-      fs.unlink(oldImagePth, (err) => {
-        if (err) {
-          console.error("Error deleting old image:", err);
 
-          return res.status(500).json({ error: `err deleting image old` });
+      fs.unlinkSync(oldImagePath, (err) => {
+        if (err) {
+          return res.status(500).json({ error: `error deleting the image` });
         }
       });
     }
-    const updatedProduct = await existingProduct.save();
 
-    return res.status(200).json(updatedProduct);
+    // console.log("Old Image Path:", oldImagePth);
+
+    await existingProduct.save();
+
+    // console.log(existingProduct)
+
+    return res.status(200).json(existingProduct);
   } catch (error) {
     console.error(error);
+    const imagePath = `Public/images/${req.file.filename}`;
+    fs.unlinkSync(imagePath);
     return res.status(500).json({ error: error.message });
-  }
-};
-
-// Update a Review
-export const updateReview = async (req, res) => {
-  const id = req.params.id;
-  const { productName, title, description, skinType, success, userID } =
-    req.body;
-  const image = req.file?.path;
-
-  try {
-    const existingReview = await Review.findById(id);
-    if (!existingReview) {
-      return res.status(404).json({ error: "Review not found" });
-    }
-
-    if (productName) existingReview.productName = productName;
-    if (title) existingReview.title = title;
-    if (description) existingReview.description = description;
-    if (skinType) existingReview.skinType = skinType;
-    if (success) existingReview.success = success;
-    if (image) existingReview.image = image;
-    if (userID) existingReview.userID = userID;
-
-    const updatedReview = await existingReview.save();
-
-    return res.status(200).json(updatedReview);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -135,11 +118,12 @@ export const createProduct = async (req, res) => {
       ingrediantsID,
       skinType,
     });
-    const path = `Public/images/${req.file.filename}`;
-    fs.unlinkSync(path);
+
     return res.status(200).json(newProduct);
   } catch (err) {
     console.log(err);
+    const path = `Public/images/${req.file.filename}`;
+    fs.unlinkSync(path);
     res.status(500).json({ message: "Problem adding product", error: err });
   }
 };
@@ -152,18 +136,29 @@ export const deleteAll = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
+//delete one product
 export const deleteProduct = async (req, res) => {
   const productId = req.params.id;
 
   try {
-    const deletedProduct = await ProductSchema.findByIdAndDelete(productId);
+    const deletedProduct = await ProductSchema.findById(productId);
+
+    // console.log(deletedProduct)
 
     if (!deletedProduct) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ error: `Product Not found` });
     }
 
-    res.status(204).end();
+    const imagePath = `Public/images/${deletedProduct.image}`;
+    fs.unlinkSync(imagePath, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error deleting Product" });
+      }
+    });
+
+    await ProductSchema.deleteOne({ _id: productId });
+
+    return res.status(200).json({ message: "Product deleted seccessfully" });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
