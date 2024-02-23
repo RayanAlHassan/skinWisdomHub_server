@@ -6,10 +6,6 @@ const reviewModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // title: {
-    //   type: String,
-    //   required: true,
-    // },
     categoryID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CategorySchema",
@@ -31,10 +27,7 @@ const reviewModelSchema = new mongoose.Schema(
       enum: ["Dry", "Oily", "Mix", "All Skin"],
       required: true,
     },
-    // success: {
-    //   type: Boolean,
-    //   default: false,
-    // },
+
     image: {
       type: String,
       required: true,
@@ -45,16 +38,14 @@ const reviewModelSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserSchema",
       required: true,
-      // autopopulate: true,
+      autopopulate: true,
     },
-    ratingID: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "ratingSchema",
-        require: false,
-        autopopulate: true,
-      },
-    ],
+    ratingID:[{
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"ratingSchema",
+      require:false,
+      autopopulate:true
+    }],
     // averageRating: {
     //   type: Number,
     //   default: 0,
