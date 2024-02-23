@@ -3,7 +3,7 @@ import Review from "../models/ReviewModel.js";
 // Get all Reviews
 export const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.find().sort({ createdAt: -1 });
+    const reviews = await Review.find().populate("userID").sort({ createdAt: -1 });
     res.status(201).json(reviews);
   } catch (error) {
     console.error(error);
@@ -15,7 +15,7 @@ export const getAllReviews = async (req, res) => {
 export const getReviewsByUser = async (req, res) => {
   try {
     const id = req.params.id;
-    const reviews = await Review.find({ user: id }).sort({ createdAt: -1 });
+    const reviews = await Review.find({ user: id }).populate("userID").sort({ createdAt: -1 });
 
     res.status(200).json(reviews);
   } catch (error) {

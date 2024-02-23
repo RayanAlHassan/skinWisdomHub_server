@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import mongooseAutoPopulate from "mongoose-autopopulate";
-
 const reviewModelSchema = new mongoose.Schema(
   {
     productName: {
@@ -29,7 +28,7 @@ const reviewModelSchema = new mongoose.Schema(
     },
     skinType: {
       type: String,
-      enum: ["Dry", "Oily", "Mix","All Skin"],
+      enum: ["Dry", "Oily", "Mix", "All Skin"],
       required: true,
     },
     // success: {
@@ -39,20 +38,23 @@ const reviewModelSchema = new mongoose.Schema(
     image: {
       type: String,
       required: true,
+      default:
+        "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngwing.com%2Fen%2Fsearch%3Fq%3Ddefault&psig=AOvVaw25d2iHYTAHQcvcHobd74UD&ust=1708767351301000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCPCA4cqUwYQDFQAAAAAdAAAAABAE",
     },
     userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserSchema",
       required: true,
-      autopopulate: true,
-
+      // autopopulate: true,
     },
-    ratingID:[{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:"ratingSchema",
-      require:false,
-      autopopulate:true
-    }],
+    ratingID: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ratingSchema",
+        require: false,
+        autopopulate: true,
+      },
+    ],
     // averageRating: {
     //   type: Number,
     //   default: 0,
@@ -65,7 +67,7 @@ const reviewModelSchema = new mongoose.Schema(
 );
 reviewModelSchema.plugin(mongooseAutoPopulate);
 
-reviewModelSchema.index({createdAt:-1})
+reviewModelSchema.index({ createdAt: -1 });
 
 const Review = mongoose.model("Review", reviewModelSchema);
 

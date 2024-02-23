@@ -25,17 +25,7 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-app.use(express.static("Public"));
-app.use("/images", express.static("images"));
 
-app.use("/user", userRoutes);
-app.use("/product", productRoutes);
-app.use("/subCategory", subCategoryRoutes);
-app.use("/category", categoryRoutes);
-app.use("/rate", ratingRoutes);
-app.use("/reviews", reviewRoutes);
-app.use("/testimoniol", testimoniolRoutes);
-app.use("/ingrediants", ingrediantRoutes);
 
 async function startServer() {
   mongoose.connection.once("open", () => {
@@ -53,3 +43,15 @@ async function startServer() {
 }
 
 startServer();
+app.use(express.static("Public"));
+// app.use("/images", express.static("images"));
+
+app.use("/user", userRoutes);
+app.use("/product", productRoutes);
+app.use("/subCategory", subCategoryRoutes);
+app.use("/category", categoryRoutes);
+app.use("/rate", ratingRoutes);
+app.use("/reviews", reviewRoutes);
+app.use("/testimoniol", testimoniolRoutes);
+app.use("/ingrediants", ingrediantRoutes);
+app.use("/Public/images", express.static('images'))
