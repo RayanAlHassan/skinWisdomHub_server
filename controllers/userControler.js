@@ -2,13 +2,15 @@ import UserSchema from "../models/UserModel.js";
 import bcrypt from 'bcryptjs';
 import { comparePassword, generateToken, verifyToken } from "../utils/jwt.js";
 import jwt from 'jsonwebtoken';
-
+import fs from "fs";
 //create user
 export const createUser = async (req, res) => {
   const { name, dob, email, password, role } = req.body;
-  const image = req.file?.path;
+  const image = req.file.filename;
 
   if (!name || !email || !password || !role) {
+    const path = `Public/images/${req.file.filename}`;
+    fs.unlinkSync(path);
     return res.status(400).send("name, email, password are required !!");
   }
 
@@ -31,6 +33,9 @@ export const createUser = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
+    const path = `Public/images/${req.file.filename}`;
+    fs.unlinkSync(path);
     console.error(error);
     return res.status(500).send("Internal Server Error");
   }
@@ -69,100 +74,93 @@ export const showOneUser = async (req, res) => {
   }
 };
 // update the user
+
+
 export const updateUser = async (req, res) => {
   const id = req.params.id;
-  console.log("Updating user with ID:", id);
+  const {
+
+    name,
+    role,
+  } = req.body;
 
   try {
-    const { name, role } = req.body;
+    const existingUser = await UserSchema.findById(id);
+    if (!existingUser) {
+      const path = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(path);
+      return res.status(404).json({ error: "user not found" });
+    }
 
-    await UserSchema.findByIdAndUpdate(
-      { _id: id },
-      {
-        name: name,
-        role: role,
-      }
-    );
+    if (name) existingUser.name = name;
+    if (role) existingUser.role = role;
+  
+    // if (image) existingUser.image = image;
 
-    console.log("User updated successfully");
+    console.log(existingUser.image)
 
-    return res.status(200).json({ message: "User updated successfully" });
-  } catch (err) {
-    console.error("Error updating user:", err);
-    return res.status(500).json({ error: "Trouble updating user info" });
+    const oldImagePath = `Public/images/${existingUser.image}`;
+
+    // console.log(oldImagePath)
+
+    if(req.file){
+      console.log(req.file.filename)
+      existingUser.image = req.file.filename;
+    
+
+      fs.unlinkSync(oldImagePath,(err)=>{
+        if(err){
+          return res.status(500).json({error:`error deleting the image`})
+        }
+      })
+    }
+    
+    // console.log("Old Image Path:", oldImagePth);
+
+    
+    await existingUser.save();
+
+    // console.log(existingUser)
+
+    return res.status(200).json(existingUser);
+  } catch (error) {
+    console.error(error);
+    const imagePath = `Public/images/${req.file.filename}`
+    fs.unlinkSync(imagePath)
+    return res.status(500).json({ error: error.message });
   }
 };
 
-// export const updateUser = async (req, res) => {
-//   const id = parseInt(req.body.id);
-//   const { name,  description, password, Link } = req.body;
-//   const newImage = req.file?.path;
 
-//   if (!name ) {
-//     return res.status(400).send(" name is required fields!");
-//   }
-
-//   try {
-//     const user = await prisma.user.findUnique({
-//       where: { id },
-//     });
-
-//     if (!user) {
-//       return res.status(404).send(`User ${id} does not exist!`);
-//     }
-
-//     let hashedPassword = user.password; // Retain the existing password by default
-
-//     // Check if a new password is provided
-//     if (password) {
-//       // Hash the new password
-//       hashedPassword = await bcrypt.hash(password, 10);
-//     }
-
-//     const editUser = await prisma.user.update({
-//       where: { id },
-//       data: {
-//         name,
-
-//         description,
-//         image: newImage,
-//         password: hashedPassword,
-//         Link,
-//       },
-//     });
-
-//     if (req.file) {
-//       // Delete old image
-//       // You need to implement the logic to delete the old image from your storage
-//     }
-
-//     return res.status(200).json({
-//       message: `User ${editUser.name} has been updated successfully!`,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
 
 // delete user
 
+
+
 export const deleteUser = async (req, res) => {
-  const id = parseInt(req.body.id);
+  const userId = req.params.id;
 
   try {
-    const user = await UserSchema.findByIdAndDelete(id);
+    const deletedUser = await UserSchema.findById(userId);
 
-    if (!user) {
-      return res.status(404).send(`User ${id} does not exist!`);
+    console.log(deletedUser)
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: `user Not found` });
     }
 
-    return res
-      .status(200)
-      .json({ message: `User ${id} has been deleted successfully!` });
+    const imagePath = `Public/images/${deletedUser.image}`;
+    fs.unlinkSync(imagePath, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error deleting Product" });
+      }
+    });
+
+    await UserSchema.deleteOne({ _id: userId });
+
+    return res.status(200).json({ message: "user deleted seccessfully" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 

@@ -7,7 +7,7 @@ import { productRoutes } from "./routes/productRoutes.js";
 import { subCategoryRoutes } from "./routes/subCategoryRoutes.js";
 // import { categoryRoutes } from "./routes/categoryRouter.js";
 import { categoryRoutes } from "./routes/categoryRoutes.js";
-// import { orderRouter } from "./routes/orderRoutes.js";
+import ratingRoutes from "./routes/RatingRoutes.js";
 import cookieParser from "cookie-parser";
 dotenv.config();
 import reviewRoutes from "./routes/ReviewRoutes.js";
@@ -25,15 +25,16 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
-app.use(express.static("images"));
+app.use(express.static("Public"));
+app.use("/images", express.static("images"));
 
 app.use("/user", userRoutes);
 app.use("/product", productRoutes);
 app.use("/subCategory", subCategoryRoutes);
 app.use("/category", categoryRoutes);
-// app.use("/order", orderRouter);
+app.use("/rate", ratingRoutes);
 app.use("/reviews", reviewRoutes);
-app.use("/testimoniol", testimoniolRoutes)
+app.use("/testimoniol", testimoniolRoutes);
 app.use("/ingrediants", ingrediantRoutes);
 
 async function startServer() {

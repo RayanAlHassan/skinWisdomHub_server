@@ -94,30 +94,32 @@ export const updateCategory = async (req, res) => {
 
 //delete category
 
-export const deleteCategory = async (req, res) => {
-  try {
-    const id = req.params.id;
 
-    // Use findByIdAndDelete for more straightforward deletion by ID
-    const deletedCategory = await CategorySchema.findByIdAndDelete(id);
+
+
+export const deleteCategory = async (req, res) => {
+  const categoryId = req.params.id;
+
+  try {
+    const deletedCategory = await CategorySchema.findById(categoryId);
+
+    console.log(deletedCategory)
 
     if (!deletedCategory) {
-      // If no category is found with the given ID
-      return res.status(404).json({
-        message: "Category not found",
-      });
+      return res.status(404).json({ error: `category Not found` });
     }
 
-    // If the category is deleted successfully
-    res.status(200).json({
-      message: "Category deleted successfully",
-      category: deletedCategory,
+    const imagePath = `Public/images/${deletedCategory.image}`;
+    fs.unlinkSync(imagePath, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error deleting category" });
+      }
     });
-  } catch (err) {
-    // Handle unexpected errors
-    console.error("Error deleting category:", err);
-    res
-      .status(500)
-      .json({ message: "Could not delete category", error: err.message });
+
+    await CategorySchema.deleteOne({ _id: categoryId });
+
+    return res.status(200).json({ message: "category deleted seccessfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

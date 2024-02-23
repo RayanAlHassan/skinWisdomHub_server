@@ -4,7 +4,7 @@ import { getAllTestimoniol , addTesteminol , updateTesteminol , deleteTesteminol
 const testimoniolRoutes = express.Router();
 
 testimoniolRoutes.get("/", getAllTestimoniol);
-testimoniolRoutes.post('/',addTesteminol)
+testimoniolRoutes.post('/create',addTesteminol)
 testimoniolRoutes.patch('/update/:id',updateTesteminol)
 testimoniolRoutes.delete('/delete/:id' , deleteTesteminol)
 

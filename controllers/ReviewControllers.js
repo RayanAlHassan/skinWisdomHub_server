@@ -49,10 +49,11 @@ export const addReview = async (req, res) => {
   try {
     if (
       !productName ||
-      !title ||
+      // !title ||
       !description ||
       !skinType ||
-      !success ||
+      // !success ||
+      
       !userID
     ) {
       return res.status(400).json({ error: "All fields are required" });
@@ -60,10 +61,11 @@ export const addReview = async (req, res) => {
 
     const newReview = await Review.create({
       productName,
-      title,
+      // title,
       description,
+      ratingID,
       skinType,
-      success,
+      // success,
       image,
       userID,
     });
@@ -77,7 +79,7 @@ export const addReview = async (req, res) => {
 // Update a Review
 export const updateReview = async (req, res) => {
   const id = req.params.id;
-  const { productName, title, description, skinType, success, userID } = req.body;
+  const { productName, description, skinType, userID,ratingID } = req.body;
   const image = req.file?.path;
 
   try {
@@ -87,12 +89,13 @@ export const updateReview = async (req, res) => {
     }
 
     if (productName) existingReview.productName = productName;
-    if (title) existingReview.title = title;
+    // if (title) existingReview.title = title;
     if (description) existingReview.description = description;
     if (skinType) existingReview.skinType = skinType;
-    if (success) existingReview.success = success;
+    // if (success) existingReview.success = success;
     if (image) existingReview.image = image;
     if (userID) existingReview.userID = userID;
+    if (ratingID) existingReview.ratingID = ratingID;
 
     const updatedReview = await existingReview.save();
 
@@ -121,3 +124,4 @@ export const deleteReview = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+

@@ -30,7 +30,7 @@ userRoutes.patch(
 
 // Delete a user
 userRoutes.delete(
-  "/delete",
+  "/delete/:id",
   authenticateUser,
   authorizeUser(["admin"]),
   deleteUser
