@@ -7,10 +7,6 @@ const reviewModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // title: {
-    //   type: String,
-    //   required: true,
-    // },
     categoryID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CategorySchema",
@@ -29,13 +25,10 @@ const reviewModelSchema = new mongoose.Schema(
     },
     skinType: {
       type: String,
-      enum: ["Dry", "Oily", "Mix","All Skin"],
+      enum: ["Dry", "Oily", "Mix", "All Skin"],
       required: true,
     },
-    // success: {
-    //   type: Boolean,
-    //   default: false,
-    // },
+
     image: {
       type: String,
       required: true,
@@ -45,18 +38,15 @@ const reviewModelSchema = new mongoose.Schema(
       ref: "UserSchema",
       required: true,
       autopopulate: true,
-
     },
-    ratingID:[{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:"ratingSchema",
-      require:false,
-      autopopulate:true
-    }],
-    // averageRating: {
-    //   type: Number,
-    //   default: 0,
-    // },
+    ratingID: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ratingSchema",
+        required: false,
+        autopopulate: true,
+      },
+    ],
   },
 
   {
@@ -65,7 +55,7 @@ const reviewModelSchema = new mongoose.Schema(
 );
 reviewModelSchema.plugin(mongooseAutoPopulate);
 
-reviewModelSchema.index({createdAt:-1})
+reviewModelSchema.index({ createdAt: -1 });
 
 const Review = mongoose.model("Review", reviewModelSchema);
 

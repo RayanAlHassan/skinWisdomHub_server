@@ -1,4 +1,5 @@
 import Review from "../models/ReviewModel.js";
+import fs from 'fs'
 
 // Get all Reviews
 export const getAllReviews = async (req, res) => {
@@ -43,35 +44,46 @@ export const getReview = async (req, res) => {
 
 // Add A review
 export const addReview = async (req, res) => {
-  const { productName, title, description, skinType, success, userID } = req.body;
-  const image = req.file?.path;
+  const { productName, categoryID , subCategoryID , description, skinType, userID } =
+    req.body;
+  // const image = req.file?.path;
 
   try {
     if (
       !productName ||
-      // !title ||
+      !categoryID ||
+      !subCategoryID ||
       !description ||
       !skinType ||
-      // !success ||
-      
-      !userID
+      !userID 
+      // !ratingID
     ) {
-      return res.status(400).json({ error: "All fields are required" });
+      const path = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(path);
+      return res.status(400).send("all fields are required are required !!");
     }
+
+    if (!req.file) {
+      return res.status(400).json({ error: "image is required" });
+    }
+
+    const image = req.file.filename;
 
     const newReview = await Review.create({
       productName,
-      // title,
+      categoryID,
+      subCategoryID,
       description,
-      ratingID,
+      // ratingID,
       skinType,
-      // success,
       image,
       userID,
     });
     return res.status(200).json(newReview);
   } catch (error) {
     console.log(error);
+    const path = `Public/images/${req.file.filename}`;
+    fs.unlinkSync(path);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -79,8 +91,8 @@ export const addReview = async (req, res) => {
 // Update a Review
 export const updateReview = async (req, res) => {
   const id = req.params.id;
-  const { productName, description, skinType, userID,ratingID } = req.body;
-  const image = req.file?.path;
+  const { productName, description, skinType, userID, ratingID } = req.body;
+  // const image = req.file?.path;
 
   try {
     const existingReview = await Review.findById(id);
@@ -116,6 +128,16 @@ export const deleteReview = async (req, res) => {
       return res.status(404).json({ error: "Review not found" });
     }
 
+    
+    const imagePath = `Public/images/${existingReview.image}`;
+    fs.unlinkSync(imagePath, (err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ error: "Error deleting the review's image" });
+      }
+    });
+
     await Review.deleteOne({ _id: id });
 
     res.status(200).json({ message: "Review deleted successfully" });
@@ -124,4 +146,3 @@ export const deleteReview = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
