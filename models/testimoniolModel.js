@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseAutoPopulate from "mongoose-autopopulate";
 
 const testimonialModelSchema = new mongoose.Schema(
   {
@@ -8,9 +9,12 @@ const testimonialModelSchema = new mongoose.Schema(
       required: true,
     },
     userID: {
+      index:true,
         type: mongoose.Schema.Types.ObjectId,
         ref: "UserSchema",
         required: true,
+        autopopulate: true,
+
       },
  
   },
@@ -18,6 +22,7 @@ const testimonialModelSchema = new mongoose.Schema(
 );
 
 
+testimonialModelSchema.plugin(mongooseAutoPopulate);
 
 const testimoniolSchema = mongoose.model("testimoniolSchema", testimonialModelSchema);
 

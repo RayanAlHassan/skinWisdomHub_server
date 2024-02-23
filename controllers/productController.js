@@ -164,21 +164,25 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 export const searchProduct = async (req, res) => {
-  const { query } = req.body;
+  const { query, skinType, ingredients } = req.body;
+  let filter = { name: { $regex: new RegExp(query, "i") } };
+
+  if (skinType) {
+    filter.skinType = skinType;
+  }
+
+  if (ingredients && ingredients.length > 0) {
+    filter.ingrediantsID = { $all: ingredients }; // Assuming ingrediantsID is an array of ingredient IDs
+  }
 
   try {
-    const products = await ProductSchema.find({
-      name: { $regex: new RegExp(query, "i") },
-    });
-
+    const products = await ProductSchema.find(filter);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 // get products by sub category
 
 export const getLastEight = async (req, res) => {
@@ -194,3 +198,33 @@ export const getLastEight = async (req, res) => {
   }
 };
 
+//search product by skin type and ingrediants
+export const getProducts = async (req, res) => {
+  try {
+    const { skinType, ingredients , categoryID,subCategoryID } = req.query;
+console.log(req.query)
+    const filter = {};
+    if (skinType) {
+      filter.skinType = skinType;
+    }
+    if (ingredients) {
+      filter.ingrediantsID = { $in: ingredients.split(',') };
+    }
+    if (categoryID) {
+      filter.categoryID = categoryID;
+    }
+     if (subCategoryID) {
+      filter.subCategoryID = subCategoryID;
+    }
+
+    const products = await ProductSchema.find(filter)
+      .populate('categoryID')
+      .populate('subCategoryID')
+      .populate('ingrediantsID');
+
+    res.json({"productss":products});
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

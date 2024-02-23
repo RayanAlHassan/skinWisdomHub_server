@@ -26,6 +26,8 @@ const userModelSchema = new mongoose.Schema({
       },
       message: 'Invalid email format',
     },
+ 
+
   },
   password: {
     type: String,

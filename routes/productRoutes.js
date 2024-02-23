@@ -8,6 +8,7 @@ import {
   searchProduct,
   deleteAll,
   getLastEight,
+  getProducts,
 
 } from "../controllers/productController.js";
 import {upload} from "../middlewares/multer.js"
@@ -25,4 +26,6 @@ productRoutes.delete("/:id",  authenticateUser,
 authorizeUser(["admin"]), deleteProduct);
 productRoutes.post("/search", searchProduct);
 productRoutes.get("/getLastEight", getLastEight);
+productRoutes.get('/products', getProducts);
+
 export  {productRoutes}

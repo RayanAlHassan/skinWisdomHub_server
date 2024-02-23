@@ -12,23 +12,31 @@ export const getAllTestimoniol = async (req, res) => {
 };
 
 // Add A Testeminol
+// Add A Testeminol
 export const addTesteminol = async (req, res) => {
-  const { feedback,userID } = req.body;
+  const { feedback, userID } = req.body;
+  console.log("Received data:", { feedback, userID });
 
   try {
-    if (!feedback  || !userID  ) {
+    if (!feedback || !userID) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    // Logging MongoDB query
+    console.log("Inserting document into MongoDB...");
     const newTestimoniol = await testimoniolSchema.create({
-      feedback,userID 
+      feedback,
+      userID,
     });
+
+    console.log("Document inserted successfully:", newTestimoniol);
     return res.status(200).json(newTestimoniol);
   } catch (error) {
-    console.log(error);
+    console.log("Error occurred:", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 
 // Update an Testeminol
 export const updateTesteminol = async (req, res) => {

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseAutoPopulate from "mongoose-autopopulate";
 
 const reviewModelSchema = new mongoose.Schema(
   {
@@ -6,9 +7,21 @@ const reviewModelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    title: {
-      type: String,
+    // title: {
+    //   type: String,
+    //   required: true,
+    // },
+    categoryID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CategorySchema",
       required: true,
+      autopopulate: true,
+    },
+    subCategoryID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubCategorySchema",
+      required: false,
+      autopopulate: true,
     },
     description: {
       type: String,
@@ -19,10 +32,10 @@ const reviewModelSchema = new mongoose.Schema(
       enum: ["Dry", "Oily", "Mix","All Skin"],
       required: true,
     },
-    success: {
-      type: Boolean,
-      default: false,
-    },
+    // success: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     image: {
       type: String,
       required: true,
@@ -31,12 +44,26 @@ const reviewModelSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "UserSchema",
       required: true,
+      autopopulate: true,
+
     },
+    ratingID:[{
+      type: mongoose.Schema.Types.ObjectId,
+      ref:"ratingSchema",
+      require:false,
+      autopopulate:true
+    }],
+    // averageRating: {
+    //   type: Number,
+    //   default: 0,
+    // },
   },
+
   {
     timestamps: true,
   }
 );
+reviewModelSchema.plugin(mongooseAutoPopulate);
 
 reviewModelSchema.index({createdAt:-1})
 
