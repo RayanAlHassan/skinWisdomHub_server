@@ -27,31 +27,32 @@ export const getAll = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const id = req.params.id;
-  const {name, categoryID, subCategoryID, description,skinType,ingrediantsID } = req.body;
-  const image = req.file ? req.file.filename : find.image;
+  // const id = req.params.id;
+  // const {name, categoryID, subCategoryID, description,skinType,ingrediantsID } = req.body;
+  // const image = req.file ? req.file.filename : find.image;
 
-  try {
-    const existingProduct = await ProductSchema.findById(id);
-    if (!existingProduct) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+  // try {
+  //   const existingProduct = await ProductSchema.findById(id);
+  //   if (!existingProduct) {
+  //     return res.status(404).json({ error: "Product not found" });
+  //   }
 
-    if (name) existingProduct.name = name;
-    if (categoryID) existingProduct.categoryID = categoryID;
-    if (subCategoryID) existingProduct.subCategoryID = subCategoryID;
-    if (description) existingProduct.description = description;
-    if (skinType) existingProduct.skinType = skinType;
-    if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
-    if (image) existingProduct.image = image;
+  //   if (name) existingProduct.name = name;
+  //   if (categoryID) existingProduct.categoryID = categoryID;
+  //   if (subCategoryID) existingProduct.subCategoryID = subCategoryID;
+  //   if (description) existingProduct.description = description;
+  //   if (skinType) existingProduct.skinType = skinType;
+  //   if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
+  //   if (image) existingProduct.image = image;
 
-    const updatedProduct = await existingProduct.save();
+  //   const updatedProduct = await existingProduct.save();
 
-    return res.status(200).json(updatedProduct);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
+  //   return res.status(200).json(updatedProduct);
+  // } catch (error) {
+  //   console.error(error);
+  //   return res.status(500).json({ error: "Internal Server Error" });
+  // }
+  return res.status(200).json("works")
 };
 
 
