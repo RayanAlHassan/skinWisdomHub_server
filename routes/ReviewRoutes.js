@@ -18,4 +18,5 @@ reviewRoutes.post("/", upload.single("image"), addReview);
 reviewRoutes.patch("/update/:id", upload.single("image"), updateReview);
 reviewRoutes.delete('/delete/:id', upload.single('image') ,deleteReview)
 
+
 export default reviewRoutes;

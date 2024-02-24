@@ -1,8 +1,9 @@
-import UserSchema from "../models/UserModel.js";
+// import UserSchema from "../models/UserModel.js";   
 import bcrypt from 'bcryptjs';
 import { comparePassword, generateToken, verifyToken } from "../utils/jwt.js";
 import jwt from 'jsonwebtoken';
 import fs from "fs";
+import UserSchema from "../models/UserModel.js";
 //create user
 export const createUser = async (req, res) => {
   const { name, dob, email, password, role } = req.body;
@@ -167,61 +168,43 @@ export const deleteUser = async (req, res) => {
 //login user
 
 export const loginUser = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    console.log("heyyy");
-    const user = await UserSchema.findOne({ email });
-
-    if (!user) {
-      return res.status(401).json({ err: "Invalid email or password" });
-    }
-
-    const isPasswordValid = await comparePassword(password, user.password);
-
-    console.log("Entered password:", password);
-    console.log("Hashed password from database:", user.password);
-    console.log("Is password valid?", isPasswordValid);
-
-    if (!isPasswordValid) {
-      console.log("Invalid password");
-      return res.status(401).json({ err: "Invalid password" });
-    }
-
+  const {email, password}=req.body;
     try {
-      const token = generateToken(user);
-      const decodedd = verifyToken(token);
+        if(!email || !password){
+            return res.status(400).json("all fields are required")
+        }
+        const user= await UserSchema.findOne({email})
+        if(!user){
+            return res.status(401).json("Invalid Email")
+        }
+        const isValidPassword= await bcrypt.compare(password, user.password)
 
-      if (!token) {
-        console.log("Token generation failed");
-        return res.status(500).json({ error: "Token generation failed" });
-      }
+        if(!isValidPassword){
+            return res.status(401).json("Invalid Password")
+        }
+        const token= jwt.sign(
+            {_id: user._id, role: user.role, email, name:user.name, image:user.image, phone: user.phone, location:user.location},
+            process.env.SECRET_TOKEN,
+            {expiresIn:"24h"}
+        )
 
-      console.log("Generated token:", token);
-      // console.log("Token Payload:", jwt.decode(token));
-      res
-      .cookie("token", token, {
-        secure: true,
-        httpOnly: true,
-        sameSite: "None",
-      })
-      .status(200)
-      .json({ message: "user logged in successfully", payload: decodedd });
-      // res.Cookies("token", token, { httpOnly: true, sameSite: "Strict" }).json({ user, token });
-    } catch (tokenError) {
-      console.error("Error during token generation:", tokenError);
-      return res.status(500).json({ error: "Internal Server Error during token generation" });
+        return res.cookie("token", token, {
+            httpOnly:true,
+            secure:true,
+            sameSite:"None"
+        }).status(200).json({ message: "Login successful", data: user , token});
+
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json(error.message)
     }
-  } catch (error) {
-    console.error("Error during login:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+}
 
 
 // to sure logedin
 export const loggedInUser = (req, res) => {
-  res.json("loged from user controller" + { user: req.user });
+  console.log(req.user)
+ return res.json({message:"loged from user controller",user: req.user });
 };
 
 //Logout user

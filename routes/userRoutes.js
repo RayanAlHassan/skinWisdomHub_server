@@ -11,6 +11,7 @@ import {
 } from "../controllers/userControler.js";
 import { upload } from "../middlewares/multer.js";
 import { authenticateUser, authorizeUser } from "../middlewares/auth.js";
+import { verifyToken } from "../utils/jwt.js";
 
 const userRoutes = express.Router();
 
@@ -37,7 +38,9 @@ userRoutes.delete(
 );
 
 // Login user
-userRoutes.post("/login", loginUser, loggedInUser);
+userRoutes.post("/login", loginUser);
+userRoutes.get("/loggedIn",verifyToken,loggedInUser);
+
 userRoutes.post("/logout", logout);
 
 export { userRoutes };

@@ -11,13 +11,16 @@ export const generateToken = (user) => {
     return jwt.sign(payload, process.env.SECRET_TOKEN, { expiresIn: "4h" });
 }
  // utils
-export const verifyToken = (token) => {
+ export const verifyToken = (req,res,next) => {
+  const token=req.cookies.token
     try {
-        return jwt.verify(token, process.env.SECRET_TOKEN);
+      const decoded=jwt.verify(token, process.env.SECRET_TOKEN);
+      req.user=decoded
+      next()
+        // return jwt.verify(token, process.env.SECRET_TOKEN);
     } catch (error){
         return null
-    }
-}
+    }}
  // utils
 export const comparePassword = async (password , hashedPassword) => {
     return bcrypt.compare(password , hashedPassword)

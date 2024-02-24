@@ -1,17 +1,37 @@
+import ratingSchema from "../models/RatingModel.js";
 import Review from "../models/ReviewModel.js";
 import fs from 'fs'
 
 // Get all Reviews
 export const getAllReviews = async (req, res) => {
   try {
-    const reviews = await Review.find().populate("userID").sort({ createdAt: -1 });
-    res.status(201).json(reviews);
+    const reviews = await Review.find()
+    .populate("userID")
+    .sort({ createdAt: -1 });
+    const reviewWithAv = await Promise.all(reviews.map(async (review) => {
+      const avg = await calculateAverageRating(review._id);
+      return { ...review.toJSON(), rate: avg.rate, totalRatingValue: avg.totalRatingValue };
+    }));
+    res.status(200).json(reviewWithAv); // Send modified reviews with average ratings
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
+// Calculate average rating for a review
+export const calculateAverageRating = async (reviewID) => {
+  const ratings = await ratingSchema.find({ reviewID });
+  const totalRatings = ratings.length;
+  const totalRates = ratings.reduce(
+    (acc, rating) => acc + rating.value,
+    0
+  );
+  console.log(Number(totalRatings)>0)
+  const averageRating = Number(totalRatings) > 0 ? (Number(totalRates) / Number(totalRatings)) : 0;
+  return {totalRatingValue:totalRatings,rate:averageRating}
+  // await Review.findOneAndUpdate({ _id: reviewID }, { averageRating });
+};
 // Get all reviews by a specific user
 export const getReviewsByUser = async (req, res) => {
   try {
@@ -44,7 +64,7 @@ export const getReview = async (req, res) => {
 
 // Add A review
 export const addReview = async (req, res) => {
-  const { productName, categoryID , subCategoryID , description, skinType, userID } =
+  const { productName, categoryID , subCategoryID , description, skinType, userID ,comments} =
     req.body;
   // const image = req.file?.path;
 
@@ -78,7 +98,9 @@ export const addReview = async (req, res) => {
       skinType,
       image,
       userID,
+      comments
     });
+
     return res.status(200).json(newReview);
   } catch (error) {
     console.log(error);
@@ -91,7 +113,7 @@ export const addReview = async (req, res) => {
 // Update a Review
 export const updateReview = async (req, res) => {
   const id = req.params.id;
-  const { productName, description, skinType, userID, ratingID } = req.body;
+  const { productName, description, skinType, userID } = req.body;
   // const image = req.file?.path;
 
   try {
@@ -107,7 +129,7 @@ export const updateReview = async (req, res) => {
     // if (success) existingReview.success = success;
     if (image) existingReview.image = image;
     if (userID) existingReview.userID = userID;
-    if (ratingID) existingReview.ratingID = ratingID;
+    // if (ratingID) existingReview.ratingID = ratingID;
 
     const updatedReview = await existingReview.save();
 

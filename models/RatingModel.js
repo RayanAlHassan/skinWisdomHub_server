@@ -12,14 +12,14 @@ const ratingModelSchema = new mongoose.Schema(
     },
     userID: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CategorySchema",
+      ref: "UserSchema",
       required: true,
       autopopulate: true,
 
     },
 reviewID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "CategorySchema",
+    ref: "Review",
     required: true,
     autopopulate: true,
 

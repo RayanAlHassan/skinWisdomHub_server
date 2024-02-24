@@ -12,14 +12,7 @@ export const getAllRatings = async (req, res) => {
   }
 };
 
-// Calculate average rating for a review
-export const calculateAverageRating = async (reviewID) => {
-  const ratings = await ratingSchema.find({ reviewID });
-  const totalRatings = ratings.length;
-  const totalRatingValue = ratings.reduce((acc, rating) => acc + rating.value, 0);
-  const averageRating = totalRatings > 0 ? totalRatingValue / totalRatings : 0;
-  await Review.findOneAndUpdate({ _id: reviewID }, { averageRating });
-};
+
 
 // Add A ratings
 export const addRating = async (req, res) => {
@@ -31,16 +24,23 @@ export const addRating = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Logging MongoDB query
-    console.log("Inserting document into MongoDB...");
-    const newRate = await ratingSchema.create({
-      reviewID,
-      value,
-      userID,
-    });
+    const existingRate = ratingSchema.findOne({ userID, reviewID });
 
-    console.log("Document inserted successfully:", newRate);
-    return res.status(200).json(newRate);
+    if (existingRate) {
+      ratingSchema.findByIdAndUpdate(reviewID, {
+        value: value,
+      });
+      const newRate = await ratingSchema.create({
+        reviewID,
+        value,
+        userID,
+      });
+  
+      return res.status(200).json(newRate);
+      // return res.status(200).json({ message: "RAting updated successfuly" });
+    }
+
+   
   } catch (error) {
     console.log("Error occurred:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -50,7 +50,7 @@ export const addRating = async (req, res) => {
 // Update an rating
 export const updaterating = async (req, res) => {
   const id = req.params.id;
-  const { reviewID, value, userID } = req.body;
+  const { reviewID, value } = req.body;
 
   try {
     const existingRatings = await ratingSchema.findById(id);
@@ -59,9 +59,7 @@ export const updaterating = async (req, res) => {
     }
 
     if (reviewID) existingRatings.reviewID = reviewID;
-    if (userID) existingRatings.userID = userID;
     if (value) existingRatings.value = value;
-
 
     const updatedRating = await existingRatings.save();
 

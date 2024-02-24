@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import mongooseAutoPopulate from "mongoose-autopopulate";
 const reviewModelSchema = new mongoose.Schema(
@@ -39,17 +40,9 @@ const reviewModelSchema = new mongoose.Schema(
       ref: "UserSchema",
       required: true,
       autopopulate: true,
-    },
-    ratingID:[{
-      type: mongoose.Schema.Types.ObjectId,
-      ref:"ratingSchema",
-      require:false,
-      autopopulate:true
-    }],
-    // averageRating: {
-    //   type: Number,
-    //   default: 0,
-    // },
+    }
+
+
   },
 
   {
