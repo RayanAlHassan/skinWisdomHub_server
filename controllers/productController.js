@@ -185,7 +185,7 @@ export const searchProduct = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-// get products by sub category
+// get last 8 products 
 
 export const getLastEight = async (req, res) => {
   try {

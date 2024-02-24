@@ -1,12 +1,12 @@
-// import express from "express";
-// import { getAllTestimoniol , addTesteminol , updateTesteminol , deleteTesteminol} from "../controllers/testimoniolController.js";
+import express from "express";
+import { getAllComments , addcoments , updatecoments , deletecoments} from "../controllers/comentsController.js";
 
-// const testimoniolRoutes = express.Router();
+const commentsRoutes = express.Router();
 
-// testimoniolRoutes.get("/", getAllTestimoniol);
-// testimoniolRoutes.post('/create',addTesteminol)
-// testimoniolRoutes.patch('/update/:id',updateTesteminol)
-// testimoniolRoutes.delete('/delete/:id' , deleteTesteminol)
+commentsRoutes.get("/", getAllComments);
+commentsRoutes.post('/create',addcoments)
+commentsRoutes.patch('/update/:id',updatecoments)
+commentsRoutes.delete('/delete/:id' , deletecoments)
 
 
-// export default testimoniolRoutes;
+export default commentsRoutes;
