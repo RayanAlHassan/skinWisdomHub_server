@@ -4,7 +4,6 @@ export const generateToken = (user) => {
     const payload = {
         id : user.id ,
         name: user.name,
-    
         email: user.email ,
         role: user.role,
     }
@@ -35,6 +34,6 @@ export const hashPassword = async (password) => {
     return hashedPassword;
   } catch (error) {
     console.error('Error hashing password:', error);
-    throw error; // Propagate the error further
+    throw error; 
   }
 };

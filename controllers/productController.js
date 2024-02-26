@@ -28,6 +28,8 @@ export const getAll = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
+  console.log("calling edit");
+
   const id = req.params.id;
   const {
     name,
@@ -40,9 +42,12 @@ export const updateProduct = async (req, res) => {
 
   try {
     const existingProduct = await ProductSchema.findById(id);
+
     if (!existingProduct) {
-      const path = `Public/images/${req.file.filename}`;
-      fs.unlinkSync(path);
+      if (req.file) {
+        const path = `Public/images/${req.file.filename}`;
+        fs.unlinkSync(path);
+      }
       return res.status(404).json({ error: "Product not found" });
     }
 
@@ -52,39 +57,102 @@ export const updateProduct = async (req, res) => {
     if (description) existingProduct.description = description;
     if (skinType) existingProduct.skinType = skinType;
     if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
-    // if (image) existingProduct.image = image;
 
     console.log(existingProduct.image);
 
     const oldImagePath = `Public/images/${existingProduct.image}`;
 
-    // console.log(oldImagePath)
-
     if (req.file) {
       console.log(req.file.filename);
       existingProduct.image = req.file.filename;
 
-      fs.unlinkSync(oldImagePath, (err) => {
-        if (err) {
-          return res.status(500).json({ error: `error deleting the image` });
-        }
-      });
+      try {
+        fs.unlinkSync(oldImagePath);
+      } catch (err) {
+        console.error("Error deleting old image:", err);
+        return res.status(500).json({ error: "Error deleting the old image" });
+      }
     }
 
-    // console.log("Old Image Path:", oldImagePth);
+    console.log("Old Image Path:", oldImagePath);
 
     await existingProduct.save();
 
-    // console.log(existingProduct)
+    console.log(existingProduct);
 
     return res.status(200).json(existingProduct);
   } catch (error) {
-    console.error(error);
-    const imagePath = `Public/images/${req.file.filename}`;
-    fs.unlinkSync(imagePath);
-    return res.status(500).json({ error: error.message });
+    console.error("Error:", error);
+    if (req.file) {
+      const imagePath = `Public/images/${req.file.filename}`;
+      fs.unlinkSync(imagePath);
+    }
+    res.status(500).json({ message: "Problem editing product", error: error });
   }
 };
+
+
+// export const updateProduct = async (req, res) => {
+//   console.log("calling edit")
+
+//   const id = req.params.id;
+//   const {
+//     name,
+//     categoryID,
+//     subCategoryID,
+//     description,
+//     skinType,
+//     ingrediantsID,
+//   } = req.body;
+
+//   try {
+//     const existingProduct = await ProductSchema.findById(id);
+
+//     if (!existingProduct) {
+//       const path = `Public/images/${req.file.filename}`;
+//       fs.unlinkSync(path);
+//       return res.status(404).json({ error: "Product not found" });
+//     }
+
+//     if (name) existingProduct.name = name;
+//     if (categoryID) existingProduct.categoryID = categoryID;
+//     if (subCategoryID) existingProduct.subCategoryID = subCategoryID;
+//     if (description) existingProduct.description = description;
+//     if (skinType) existingProduct.skinType = skinType;
+//     if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
+//     // if (image) existingProduct.image = image;
+
+//     console.log(existingProduct.image);
+
+//     const oldImagePath = `Public/images/${existingProduct.image}`;
+
+//     // console.log(oldImagePath)
+
+//     if (req.file) {
+//       console.log(req.file.filename);
+//       existingProduct.image = req.file.filename;
+
+//       fs.unlinkSync(oldImagePath, (err) => {
+//         if (err) {
+//           return res.status(500).json({ error: `error deleting the image` });
+//         }
+//       });
+//     }
+
+//     console.log("Old Image Path:", oldImagePth);
+
+//     await existingProduct.save();
+
+//     console.log(existingProduct)
+
+//     return res.status(200).json(existingProduct);
+//   } catch (error) {
+//     console.error("err",error);
+//     const imagePath = `Public/images/${req.file.filename}`;
+//     fs.unlinkSync(imagePath);
+//     res.status(500).json({ message: "Problem edit product", error: err });
+//   }
+// };
 
 
 
@@ -201,32 +269,69 @@ export const getLastEight = async (req, res) => {
 };
 
 //search product by skin type and ingrediants
+// export const getProducts = async (req, res) => {
+//   try {
+//     const { skinType, ingredients , categoryID,subCategoryID } = req.query;
+// console.log(req.query)
+//     const filter = {};
+//     if (skinType) {
+//       filter.skinType = skinType;
+//     }
+//     if (ingredients) {
+//       filter.ingrediantsID = { $in: ingredients.split(',') };
+//     }
+//     if (categoryID) {
+//       filter.categoryID = categoryID;
+//     }
+//      if (subCategoryID) {
+//       filter.subCategoryID = subCategoryID;
+//     }
+
+//     const products = await ProductSchema.find(filter)
+//       // .populate('categoryID')
+//       // .populate('subCategoryID')
+//       // .populate('ingrediantsID');
+
+//     res.json({"productss":products});
+//     console.log("productss",products)
+//   } catch (error) {
+//     console.error('Error fetching products:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// };
 export const getProducts = async (req, res) => {
   try {
-    const { skinType, ingredients , categoryID,subCategoryID } = req.query;
-console.log(req.query)
+    const { skinType, ingredients, categoryID, subCategoryID } = req.body;
+// console.log("ingreede",JSON.parse(ingredients))
+console.log(req.body)
     const filter = {};
     if (skinType) {
       filter.skinType = skinType;
     }
     if (ingredients) {
-      filter.ingrediantsID = { $in: ingredients.split(',') };
+      // Split ingredients into an array of ObjectIds
+      // const ingredientIds = ingredients.split(',');
+      const ingredientIds=ingredients
+      // Convert each string ID to ObjectId
+      // const ingredientObjectIds = ingredientIds.map(id => mongoose.Types.ObjectId(id));
+      filter['ingrediantsID'] = { $in: ingredientIds };
     }
     if (categoryID) {
       filter.categoryID = categoryID;
     }
-     if (subCategoryID) {
+    if (subCategoryID) {
       filter.subCategoryID = subCategoryID;
     }
-
+console.log("filterr",filter)
     const products = await ProductSchema.find(filter)
       .populate('categoryID')
       .populate('subCategoryID')
       .populate('ingrediantsID');
 
-    res.json({"productss":products});
+    res.json({ products });
+    // console.log("products", products);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    console.error('Error fetching products:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

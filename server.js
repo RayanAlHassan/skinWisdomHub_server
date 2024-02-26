@@ -14,6 +14,7 @@ import reviewRoutes from "./routes/ReviewRoutes.js";
 import ingrediantRoutes from "./routes/IngrediantsRoutes.js";
 import testimoniolRoutes from "./routes/testimonilRoutes.js";
 import commentsRoutes from "./routes/comentsRoutes.js";
+import bodyParser from 'body-parser'
 // express app
 const app = express();
 app.use(express.json());
@@ -57,3 +58,4 @@ app.use("/testimoniol", testimoniolRoutes);
 app.use("/ingrediants", ingrediantRoutes);
 app.use("/Public/images", express.static('images'))
 app.use("/comments",commentsRoutes)
+app.use(bodyParser.urlencoded({extended:true}))

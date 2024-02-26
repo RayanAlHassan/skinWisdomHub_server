@@ -26,6 +26,6 @@ productRoutes.delete("/:id",  authenticateUser,
 authorizeUser(["admin"]), deleteProduct);
 productRoutes.post("/search", searchProduct);
 productRoutes.get("/getLastEight", getLastEight);
-productRoutes.get('/products', getProducts);
+productRoutes.post('/read/products', getProducts);
 
 export  {productRoutes}
