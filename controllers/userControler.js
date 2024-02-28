@@ -135,9 +135,6 @@ export const updateUser = async (req, res) => {
 
 
 // delete user
-
-
-
 export const deleteUser = async (req, res) => {
   const userId = req.params.id;
 
@@ -169,6 +166,7 @@ export const deleteUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const {email, password}=req.body;
+
     try {
         if(!email || !password){
             return res.status(400).json("all fields are required")
@@ -193,7 +191,6 @@ export const loginUser = async (req, res) => {
             secure:true,
             sameSite:"None"
         }).status(200).json({ message: "Login successful", data: user , token});
-
     } catch (error) {
         console.log(error.message)
         res.status(500).json(error.message)

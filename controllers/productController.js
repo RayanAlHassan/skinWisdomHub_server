@@ -58,12 +58,12 @@ export const updateProduct = async (req, res) => {
     if (skinType) existingProduct.skinType = skinType;
     if (ingrediantsID) existingProduct.ingrediantsID = ingrediantsID;
 
-    console.log(existingProduct.image);
+    // console.log(existingProduct.image);
 
     const oldImagePath = `Public/images/${existingProduct.image}`;
 
     if (req.file) {
-      console.log(req.file.filename);
+      // console.log(req.file.filename);
       existingProduct.image = req.file.filename;
 
       try {
@@ -74,11 +74,11 @@ export const updateProduct = async (req, res) => {
       }
     }
 
-    console.log("Old Image Path:", oldImagePath);
+    // console.log("Old Image Path:", oldImagePath);
 
     await existingProduct.save();
 
-    console.log(existingProduct);
+    // console.log(existingProduct);
 
     return res.status(200).json(existingProduct);
   } catch (error) {

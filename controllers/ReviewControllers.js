@@ -168,3 +168,18 @@ export const deleteReview = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getAverageRatingForReview = async (req, res) => {
+  const reviewID = req.params.id;
+  
+  try {
+    const ratings = await ratingSchema.find({ reviewID });
+    const totalRatings = ratings.length;
+    const totalRates = ratings.reduce((acc, rating) => acc + rating.value, 0);
+    const averageRating = totalRatings > 0 ? totalRates / totalRatings : 0;
+
+    res.status(200).json({ averageRating });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
