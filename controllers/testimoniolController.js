@@ -14,7 +14,7 @@ export const getAllTestimoniol = async (req, res) => {
 // Add A Testeminol
 // Add A Testeminol
 export const addTesteminol = async (req, res) => {
-  const { feedback, userID } = req.body;
+  const { feedback, userID ,status} = req.body;
   console.log("Received data:", { feedback, userID });
 
   try {
@@ -27,6 +27,7 @@ export const addTesteminol = async (req, res) => {
     const newTestimoniol = await testimoniolSchema.create({
       feedback,
       userID,
+      status
     });
 
     console.log("Document inserted successfully:", newTestimoniol);

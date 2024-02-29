@@ -80,7 +80,7 @@ export const showOneUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   const id = req.params.id;
   const {
-
+    dob,
     name,
     role,
   } = req.body;
@@ -95,7 +95,8 @@ export const updateUser = async (req, res) => {
 
     if (name) existingUser.name = name;
     if (role) existingUser.role = role;
-  
+    if (dob) existingUser.dob = dob;
+
     // if (image) existingUser.image = image;
 
     console.log(existingUser.image)
@@ -181,7 +182,7 @@ export const loginUser = async (req, res) => {
             return res.status(401).json("Invalid Password")
         }
         const token= jwt.sign(
-            {_id: user._id, role: user.role, email, name:user.name, image:user.image, phone: user.phone, location:user.location},
+            {_id: user._id, role: user.role, email, name:user.name, image:user.image, phone: user.phone, location:user.location, dob:user.dob},
             process.env.SECRET_TOKEN,
             {expiresIn:"24h"}
         )

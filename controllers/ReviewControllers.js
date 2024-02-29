@@ -1,3 +1,4 @@
+import { error } from "console";
 import ratingSchema from "../models/RatingModel.js";
 import Review from "../models/ReviewModel.js";
 import fs from 'fs'
@@ -36,12 +37,19 @@ export const calculateAverageRating = async (reviewID) => {
 export const getReviewsByUser = async (req, res) => {
   try {
     const id = req.params.id;
-    const reviews = await Review.find({ user: id }).populate("userID").sort({ createdAt: -1 });
+    const reviews = await Review.find({ userID: id }).sort({ createdAt: -1 });
 
-    res.status(200).json(reviews);
+    // Calculate average rating for each review
+    const reviewsWithAvg = await Promise.all(reviews.map(async (review) => {
+      const avg = await calculateAverageRating(review._id);
+      return { ...review.toJSON(), rate: avg.rate, totalRatingValue: avg.totalRatingValue };
+    }));
+
+    res.status(200).json(reviewsWithAvg); // Send modified reviews with average ratings
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -64,7 +72,7 @@ export const getReview = async (req, res) => {
 
 // Add A review
 export const addReview = async (req, res) => {
-  const { productName, categoryID , subCategoryID , description, skinType, userID ,comments} =
+  const { productName, categoryID , subCategoryID , description, skinType, userID } =
     req.body;
   // const image = req.file?.path;
 
@@ -79,7 +87,10 @@ export const addReview = async (req, res) => {
       // !ratingID
     ) {
       const path = `Public/images/${req.file.filename}`;
-      fs.unlinkSync(path);
+      if (req.file && fs.existsSync(path)) {
+        fs.unlinkSync(path);
+      }
+      
       return res.status(400).send("all fields are required are required !!");
     }
 
@@ -98,7 +109,7 @@ export const addReview = async (req, res) => {
       skinType,
       image,
       userID,
-      comments
+      // comments
     });
 
     return res.status(200).json(newReview);

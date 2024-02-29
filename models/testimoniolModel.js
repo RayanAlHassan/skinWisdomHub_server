@@ -16,7 +16,12 @@ const testimonialModelSchema = new mongoose.Schema(
         autopopulate: true,
 
       },
- 
+      status: {
+        type: String,
+        enum: ["pending", "rejected", "accepted"],
+        required: true,
+      },
+  
   },
   { timestamps: true }
 );
