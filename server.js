@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:3000, https://skinwisdomhub-server.onrender.com",
     credentials: true,
     optionsSuccessStatus: 200,
   })
