@@ -206,11 +206,21 @@ export const loggedInUser = (req, res) => {
 };
 
 //Logout user
-export const logout = async (req, res) => {
-  try {
-    res.clearCookie("token").json({ message: "Logout successful" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
+// export const logout = async (req, res) => {
+//   try {
+//     res.clearCookie("token").json({ message: "Logout successful" });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+export const logout = (req, res) => {
+  return res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    })
+    .status(200)
+    .json({ message: "Successfully Logged Out!" });
 };
