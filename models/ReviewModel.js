@@ -26,7 +26,7 @@ const reviewModelSchema = new mongoose.Schema(
     skinType: {
       type: String,
       enum: ["Dry", "Oily", "Mix", "All "],
-      required: true,
+      required: false,
     },
 
     image: {

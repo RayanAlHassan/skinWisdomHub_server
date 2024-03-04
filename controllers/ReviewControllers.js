@@ -117,7 +117,7 @@ export const addReview = async (req, res) => {
     console.log(error);
     const path = `Public/images/${req.file.filename}`;
     fs.unlinkSync(path);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: error.message });
   }
 };
 
