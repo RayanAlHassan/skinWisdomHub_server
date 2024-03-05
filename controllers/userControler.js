@@ -1,7 +1,7 @@
-// import UserSchema from "../models/UserModel.js";   
-import bcrypt from 'bcryptjs';
+// import UserSchema from "../models/UserModel.js";
+import bcrypt from "bcryptjs";
 import { comparePassword, generateToken, verifyToken } from "../utils/jwt.js";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import fs from "fs";
 import UserSchema from "../models/UserModel.js";
 //create user
@@ -76,14 +76,9 @@ export const showOneUser = async (req, res) => {
 };
 // update the user
 
-
 export const updateUser = async (req, res) => {
   const id = req.params.id;
-  const {
-    dob,
-    name,
-    role,
-  } = req.body;
+  const { dob, name, role } = req.body;
 
   try {
     const existingUser = await UserSchema.findById(id);
@@ -99,27 +94,25 @@ export const updateUser = async (req, res) => {
 
     // if (image) existingUser.image = image;
 
-    console.log(existingUser.image)
+    console.log(existingUser.image);
 
     const oldImagePath = `Public/images/${existingUser.image}`;
 
     // console.log(oldImagePath)
 
-    if(req.file){
-      console.log(req.file.filename)
+    if (req.file) {
+      console.log(req.file.filename);
       existingUser.image = req.file.filename;
-    
 
-      fs.unlinkSync(oldImagePath,(err)=>{
-        if(err){
-          return res.status(500).json({error:`error deleting the image`})
+      fs.unlinkSync(oldImagePath, (err) => {
+        if (err) {
+          return res.status(500).json({ error: `error deleting the image` });
         }
-      })
+      });
     }
-    
+
     // console.log("Old Image Path:", oldImagePth);
 
-    
     await existingUser.save();
 
     // console.log(existingUser)
@@ -127,13 +120,11 @@ export const updateUser = async (req, res) => {
     return res.status(200).json(existingUser);
   } catch (error) {
     console.error(error);
-    const imagePath = `Public/images/${req.file.filename}`
-    fs.unlinkSync(imagePath)
+    const imagePath = `Public/images/${req.file.filename}`;
+    fs.unlinkSync(imagePath);
     return res.status(500).json({ error: error.message });
   }
 };
-
-
 
 // delete user
 export const deleteUser = async (req, res) => {
@@ -142,7 +133,7 @@ export const deleteUser = async (req, res) => {
   try {
     const deletedUser = await UserSchema.findById(userId);
 
-    console.log(deletedUser)
+    console.log(deletedUser);
 
     if (!deletedUser) {
       return res.status(404).json({ error: `user Not found` });
@@ -166,61 +157,63 @@ export const deleteUser = async (req, res) => {
 //login user
 
 export const loginUser = async (req, res) => {
-  const {email, password}=req.body;
+  const { email, password } = req.body;
 
-    try {
-        if(!email || !password){
-            return res.status(400).json("all fields are required")
-        }
-        const user= await UserSchema.findOne({email})
-        if(!user){
-            return res.status(401).json("Invalid Email")
-        }
-        const isValidPassword= await bcrypt.compare(password, user.password)
-
-        if(!isValidPassword){
-            return res.status(401).json("Invalid Password")
-        }
-        const token= jwt.sign(
-            {_id: user._id, role: user.role, email, name:user.name, image:user.image, phone: user.phone, location:user.location, dob:user.dob},
-            process.env.SECRET_TOKEN,
-            {expiresIn:"24h"}
-        )
-
-        return res.cookie("token", token, {
-            httpOnly:true,
-            secure:true,
-            sameSite:"None"
-        }).status(200).json({ message: "Login successful", data: user , token});
-    } catch (error) {
-        console.log(error.message)
-        res.status(500).json(error.message)
+  try {
+    if (!email || !password) {
+      return res.status(400).json("all fields are required");
     }
-}
+    const user = await UserSchema.findOne({ email });
+    if (!user) {
+      return res.status(401).json("Invalid Email");
+    }
+    const isValidPassword = await bcrypt.compare(password, user.password);
 
+    if (!isValidPassword) {
+      return res.status(401).json("Invalid Password");
+    }
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        role: user.role,
+        email,
+        name: user.name,
+        image: user.image,
+        phone: user.phone,
+        location: user.location,
+        dob: user.dob,
+      },
+      process.env.SECRET_TOKEN,
+      { expiresIn: "24h" }
+    );
+
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .status(200)
+      .json({ message: "Login successful", data: user, token });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json(error.message);
+  }
+};
 
 // to sure logedin
 export const loggedInUser = (req, res) => {
-  console.log(req.user)
- return res.json({message:"loged from user controller",user: req.user });
+  console.log(req.user);
+  return res.json({ message: "loged from user controller", user: req.user });
 };
 
 //Logout user
-// export const logout = async (req, res) => {
-//   try {
-//     res.clearCookie("token").json({ message: "Logout successful" });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
-export const logout = (req, res) => {
-  return res
-    .clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    })
-    .status(200)
-    .json({ message: "Successfully Logged Out!" });
+export const logout = async (req, res) => {
+  try {
+    console.log("tryy");
+    res.clearCookie("token").json({ message: "Logout successful" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
