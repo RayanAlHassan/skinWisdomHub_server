@@ -208,12 +208,36 @@ export const loggedInUser = (req, res) => {
 };
 
 //Logout user
+// export const logout = async (req, res) => {
+//   try {
+//     console.log("tryy");
+//     res.clearCookie("token").json({ message: "Logout successful" });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
 export const logout = async (req, res) => {
   try {
     console.log("tryy");
-    res.clearCookie("token").json({ message: "Logout successful" });
+    
+    // Clear the existing token cookie
+    res.clearCookie("token");
+
+    // Set an empty token cookie with an expired date
+    res.cookie("token", "", {
+      expires: new Date(0),
+      httpOnly: true,
+      secure: true,
+      sameSite: "None"
+    });
+
+    // Send response with a message
+    res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
